@@ -50,11 +50,11 @@ SyncLogic::GetTypeId ()
                    MakeDoubleAccessor (&SyncLogic::m_lossRate),
                    MakeDoubleChecker<double> (0.0, 1.0))
     .AddAttribute ("MaxLogLength", "The maximum length of digest log.",
-                   UintegerValue (100),
+                   UintegerValue (1000),
                    MakeUintegerAccessor (&SyncLogic::m_logLength),
                    MakeUintegerChecker<uint32_t> (10))
     .AddAttribute ("SyncPeriod", "The time interval of sending Sync Interests.",
-                   DoubleValue (3.0),
+                   DoubleValue (2.0),
                    MakeDoubleAccessor (&SyncLogic::m_syncPeriod),
                    MakeDoubleChecker<double> (0.5, 120.0))
     .AddAttribute ("JoinPeriod", "The time interval of sending Join Interests. 0 means NO Join Interest, and NO PIT Forwarding.",
@@ -158,7 +158,8 @@ SyncLogic::OnData (Ptr<const ndn::Interest> origInterest, Ptr<const ndn::Data> d
   Ptr<Packet> payload = data->GetPayload ()->Copy ();    
   NameListHeader nameList;
   payload->RemoveHeader (nameList);
-  nameList.Print(std::cout);
+  //nameList.Print(std::cout);
+  NS_LOG_DEBUG (nameList);
   std::vector<std::string> newNameList;
   bool hasNew = false;
   
@@ -236,7 +237,7 @@ SyncLogic::PeriodicalSyncInterest ()
 {
   SendSyncInterest (CurrentDigest (), 0, Seconds (0));
   UniformVariable jitter (0.001, 0.5);
-  Simulator::Schedule (Seconds (m_syncPeriod + jitter.GetValue ()), &SyncLogic::PeriodicalSyncInterest, this);
+  Simulator::Schedule (Seconds (m_syncPeriod - jitter.GetValue ()), &SyncLogic::PeriodicalSyncInterest, this);
 }
 
 void
@@ -257,7 +258,7 @@ SyncLogic::PeriodicalJoinInterest ()
                           MakeNullCallback< void, Ptr<const Interest>, Ptr<const Data> > (),
                           MakeNullCallback< void, Ptr<const Interest> > ());
   UniformVariable jitter (0.001, 0.5);
-  Simulator::Schedule (Seconds (m_joinPeriod + jitter.GetValue ()), &SyncLogic::PeriodicalJoinInterest, this);
+  Simulator::Schedule (Seconds (m_joinPeriod - jitter.GetValue ()), &SyncLogic::PeriodicalJoinInterest, this);
 }
 
 void
@@ -274,7 +275,8 @@ SyncLogic::SendUpdateInbetween (uint64_t digest1, uint64_t digest2)
   Ptr<NameListHeader> nameList = Create<NameListHeader> ();
   if (m_state.GetUpdateInbetween (digest1, digest2, nameList->GetRef ()) == false)
     return;
-  nameList->Print (std::cout);
+  //nameList->Print (std::cout);
+  NS_LOG_DEBUG (nameList);
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (*nameList);
   Ptr<ndn::Data> data = Create<ndn::Data> (packet);

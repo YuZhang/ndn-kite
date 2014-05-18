@@ -4,7 +4,6 @@
  *
  * Author: Yu Zhang <yuzhang@hit.edu.cn>
  */
-// ndn-sync.cc
  
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
@@ -19,19 +18,21 @@ using namespace ns3;
 int 
 main (int argc, char *argv[])
 {
+  int isKite = 1;
   int gridSize = 4;
   int mobileSize = 5;
   int speed = 40;
-  bool isKite = true;
+  int stopTime = 100;
+  int joinTime = 1;
 
   CommandLine cmd;
-  cmd.AddValue("isKite", "Enable Kite", isKite);
+  cmd.AddValue("kite", "enable Kite", isKite);
+  cmd.AddValue("speed", "mobile speed m/s", speed);
+  cmd.AddValue("size", "# mobile", mobileSize);
+  cmd.AddValue("grid", "grid size", gridSize);  
+  cmd.AddValue("stop", "stop time", stopTime);  
+  cmd.AddValue("join", "join period", joinTime);  
   cmd.Parse (argc, argv);
-
-
-  //AnnotatedTopologyReader topologyReader ("", 1);
-  //topologyReader.SetFileName ("topologies/tree.txt");
-  //topologyReader.Read ();
 
   PointToPointHelper p2p;
   PointToPointGridHelper grid (gridSize, gridSize, p2p);
@@ -40,9 +41,6 @@ main (int argc, char *argv[])
   NodeContainer wifiNodes;
   NodeContainer mobileNodes;
   mobileNodes.Create (mobileSize);
-
-  std::string syncPrefix = "/ndn/sync/join";
-  Ptr<Node> rpNode = grid.GetNode (0, 0);
 
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
@@ -79,16 +77,25 @@ main (int argc, char *argv[])
   mobility.Install (mobileNodes); 
 
   ndn::StackHelper ndnHelper;
-  if (isKite)
+  if (isKite == 1) // Kite
     { 
+      Config::SetDefault ("SyncLogic::JoinPeriod", DoubleValue(joinTime));
+      Config::SetDefault ("SyncApp::SyncPrefix", StringValue("/ndn/sync"));
       ndnHelper.SetForwardingStrategy("ns3::ndn::fw::PitForwarding");
-      std::cout << "Kite\n";
     }
-  else
+ 
+  if (isKite == 0) // Flooding w/o Kite
     {
+      Config::SetDefault ("SyncLogic::JoinPeriod", DoubleValue(0.0));
+      Config::SetDefault ("SyncApp::SyncPrefix", StringValue("/"));
+      Config::SetDefault ("SyncLogic::SyncPrefix", StringValue("/"));
       ndnHelper.SetForwardingStrategy("ns3::ndn::fw::Flooding");
     }
+
   ndnHelper.SetDefaultRoutes (true); // there must be an entry in FIB for an Interest, otherwise the Interest will be dropped
+
+  std::string syncPrefix = "/ndn/sync/join";
+  Ptr<Node> rpNode = grid.GetNode (0, 0);
 
   Ptr<ndn::FaceContainer> faces = ndnHelper.Install (mobileNodes);
   for (ndn::FaceContainer::Iterator i = faces->Begin ();
@@ -113,17 +120,15 @@ main (int argc, char *argv[])
 
   ndn::AppHelper rpHelper ("SyncRP");
   ApplicationContainer rpApp= rpHelper.Install (rpNode);
-  rpApp.Start (Seconds (1));
+  rpApp.Start (Seconds (0));
 
-  // leaves are Sync Apps
   ndn::AppHelper appHelper ("SyncApp");
   ApplicationContainer app = appHelper.Install (mobileNodes);
-  app.Start (Seconds (2));
+  app.Start (Seconds (1));
 
-  Simulator::Stop (Seconds (20.0));
-
-  ndn::L3AggregateTracer::InstallAll ("aggregate-trace.txt", Seconds (1.0));
-
+  Simulator::Stop (Seconds (stopTime));
+  ndn::L3AggregateTracer::InstallAll ("results/aggregate-trace.txt", Seconds (1));
+  //ndn::AppDelayTracer::Install (mobileNodes, "results/app-delays-trace.txt");
   Simulator::Run ();
   Simulator::Destroy ();
 
