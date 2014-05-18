@@ -22,5 +22,5 @@ or reproduce the results in Kite paper:
 
 `./sim.pl`
 
-The results is in `/results` folder.
+The results and plotting scripts are in `/results` folder.
 

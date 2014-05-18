@@ -11,13 +11,13 @@
 #    	gnuplot home:     http://www.gnuplot.info
 #    	faq, bugs, etc:   type "help FAQ"
 #    	immediate help:   type "help"  (plot window: hit 'h')
-# set terminal postscript eps enhanced defaultplex \
+set terminal postscript eps enhanced defaultplex \
    leveldefault monochrome colortext \
    dashed dashlength 1.0 linewidth 1.0 butt noclip \
    nobackground \
    palfuncparam 2000,0.003 \
    "Times-Roman" 14  fontscale 1.0 
-# set output 'traffic.eps'
+set output 'traffic.eps'
 unset clip points
 set clip one
 unset clip two
@@ -156,5 +156,5 @@ set fontpath
 set psdir
 set fit noerrorvariables
 GNUTERM = "aqua"
-plot 'results/size-packet-0.txt' using 1:3:2:6:5 with candlesticks linetype 1 notitle whiskerbars, '' using 1:4 with lp pt 7 lt 1 t 'Flooding', 'results/size-packet-1.txt' using 1:3:2:6:5 with candlesticks linetype 1 notitle whiskerbars, '' using 1:4 with lp pt 6 lt 2 linewidth 1.2 title 'Kite'
+plot 'size-packet-0.txt' using 1:3:2:6:5 with candlesticks linetype 1 notitle whiskerbafs, '' using 1:4 with lp pt 7 lt 1 t 'Flooding', 'size-packet-1.txt' using 1:3:2:6:5 with candlesticks linetype 1 notitle whiskerbars, '' using 1:4 with lp pt 6 lt 2 linewidth 1.2 title 'Kite'
 #    EOF
