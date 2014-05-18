@@ -14,7 +14,7 @@ first configure: (CAUTION: `--debug` cannot be omitted due to a unfixed issue)
 
 `PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./waf configure --debug`
 
-and then run with visualization:
+and then edit and run with visualization:
 
 `./run.sh --vis`
 

@@ -20,7 +20,7 @@ my $ff;
 
 open($ff, ">", "results/size-packet-0.txt") or die "Can not open file: $!";
 foreach my $size ( map {$_*5} (1 .. 6) ) {
-  print $ff "$size";
+  print $ff "$size ";
   my @a = ();
   foreach my $run ( 1 .. $nrun ) {
    # my $cmd = "NS_GLOBAL_VALUE=\"RngRun=${run}\" ./waf --run \"tree-mobile --kite=1 --speed=500 --size=${size} --grid=4 --stop=20 --SyncApp::UpdatePeriod=20 \" "; 
