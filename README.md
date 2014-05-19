@@ -16,11 +16,19 @@ first configure: (CAUTION: `--debug` cannot be omitted due to an issue)
 
 and then edit and run with visualization:
 
-`./run.sh --vis`
+`./upload-run.sh --vis`
+
+or
+
+`./sync-run.sh --vis`
 
 or reproduce the results in Kite paper:
 
-`./sim.pl`
+`./upload-sim.pl`
+
+or
+
+`./sync-sim.pl`
 
 The results and plotting scripts are in `/results` folder.
 

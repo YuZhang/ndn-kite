@@ -156,5 +156,5 @@ set fontpath
 set psdir
 set fit noerrorvariables
 GNUTERM = "aqua"
-plot 'size-packet-0.txt' using 1:3:2:6:5 with candlesticks linetype 1 notitle whiskerbars, '' using 1:4 with lp pt 7 lt 1 t 'Flooding', 'size-packet-1.txt' using 1:3:2:6:5 with candlesticks linetype 1 notitle whiskerbars, '' using 1:4 with lp pt 6 lt 2 linewidth 1.2 title 'Kite'
+plot 'size-packet-0.txt' using 1:4:2:6 with yerrorlines pt 7 lt 1 t 'Flooding', 'size-packet-1.txt' using 1:4:2:6 with yerrorlines pt 6 lt 1 title 'Kite'
 #    EOF

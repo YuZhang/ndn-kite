@@ -18,7 +18,7 @@ sub getresult () {
 my $ff;
 
 open($ff, ">", "results/speed-packet-1.txt") or die "Can not open file: $!";
-foreach my $size ( map {$_*50} (1 .. 10) ) {
+foreach my $size ( map {$_*50} (1 .. 6) ) {
   print $ff "$size ";
   my @a = ();
   foreach my $run ( 1 .. $nrun ) {
@@ -34,7 +34,7 @@ foreach my $size ( map {$_*50} (1 .. 10) ) {
 close $ff;
 
 open($ff, ">", "results/speed-packet-0.txt") or die "Can not open file: $!";
-foreach my $size ( map {$_*50} (1 .. 10) ) {
+foreach my $size ( map {$_*50} (1 .. 6) ) {
   print $ff "$size ";
   my @a = ();
   foreach my $run ( 1 .. $nrun ) {
