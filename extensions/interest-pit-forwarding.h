@@ -89,12 +89,12 @@ protected:
 
   virtual int
   Pull (Ptr<Face> inFace,
-        Ptr<Face> outFace,
         Ptr<const Interest> interest,
         Ptr<pit::Entry> pitEntry);
 
 protected:
   static LogComponent g_log;
+  bool m_pull;
 
 // To-Do: Pit Forwarding Table for 
 // typedef ndnSIM::fifo_policy_traits policy;

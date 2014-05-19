@@ -10,7 +10,7 @@ We need to install:
 
 After installing the above version of ndnSIM, we need 
 
-first configure: (CAUTION: `--debug` cannot be omitted due to a unfixed issue)
+first configure: (CAUTION: `--debug` cannot be omitted due to an issue)
 
 `PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./waf configure --debug`
 

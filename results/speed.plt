@@ -17,7 +17,7 @@ set terminal postscript eps enhanced defaultplex \
    nobackground \
    palfuncparam 2000,0.003 \
    "Times-Roman" 14  fontscale 1.0 
-set output 'traffic.eps'
+set output 'speed.eps'
 unset clip points
 set clip one
 unset clip two
@@ -34,14 +34,14 @@ set timefmt y2 "%d/%m/%y,%H:%M"
 set y2data 
 set timefmt x2 "%d/%m/%y,%H:%M"
 set x2data 
-set boxwidth 1 absolute
+set boxwidth 10 absolute
 set style fill  empty border
 set style rectangle back fc lt -3 fillstyle   solid 1.00 border lt -1
 set style circle radius graph 0.02, first 0, 0 
 set style ellipse size graph 0.05, 0.03, first 0 angle 0 units xy
 set dummy x,y
 set format x "% g"
-set format y "%.0s"
+set format y "% g"
 set format x2 "% g"
 set format y2 "% g"
 set format z "% g"
@@ -51,7 +51,7 @@ set angles radians
 unset grid
 set raxis
 set key title ""
-set key inside left top vertical Right noreverse enhanced autotitles nobox
+set key inside right top vertical Right noreverse enhanced autotitles nobox
 set key noinvert samplen 4 spacing 1 width 0 height 0 
 set key maxcolumns 0 maxrows 0
 set key noopaque
@@ -119,17 +119,17 @@ set rrange [ * : * ] noreverse nowriteback
 set trange [ * : * ] noreverse nowriteback
 set urange [ * : * ] noreverse nowriteback
 set vrange [ * : * ] noreverse nowriteback
-set xlabel "Number of mobile nodes" 
+set xlabel "Speed of mobile nodes (m/s)" 
 set xlabel  offset character 0, 0, 0 font "" textcolor lt -1 norotate
 set x2label "" 
 set x2label  offset character 0, 0, 0 font "" textcolor lt -1 norotate
-set xrange [ 2.00000 : 33.0000 ] noreverse nowriteback
+set xrange [ 0.00000 : 550.0000 ] noreverse nowriteback
 set x2range [ * : * ] noreverse nowriteback
-set ylabel "Number of packets (x 1000)" 
+set ylabel "Number of uploaded packets" 
 set ylabel  offset character 0, 0, 0 font "" textcolor lt -1 rotate by -270
 set y2label "" 
 set y2label  offset character 0, 0, 0 font "" textcolor lt -1 rotate by -270
-set yrange [ * : * ] noreverse nowriteback
+set yrange [ 0 : 500 ] noreverse nowriteback
 set y2range [ * : * ] noreverse nowriteback
 set zlabel "" 
 set zlabel  offset character 0, 0, 0 font "" textcolor lt -1 norotate
@@ -155,6 +155,6 @@ set loadpath
 set fontpath 
 set psdir
 set fit noerrorvariables
-GNUTERM = "aqua"
-plot 'size-packet-0.txt' using 1:3:2:6:5 with candlesticks linetype 1 notitle whiskerbars, '' using 1:4 with lp pt 7 lt 1 t 'Flooding', 'size-packet-1.txt' using 1:3:2:6:5 with candlesticks linetype 1 notitle whiskerbars, '' using 1:4 with lp pt 6 lt 2 linewidth 1.2 title 'Kite'
+#GNUTERM = "aqua"
+plot 'speed-packet-0.txt' using ($1-10):3:2:6:5 with candlesticks linetype 1 notitle whiskerbars, '' using ($1-10):4 with lp pt 7 lt 1 t 'MMS', 'speed-packet-1.txt' using ($1+10):3:2:6:5 with candlesticks linetype 1 notitle whiskerbars, '' using ($1+10):4 with lp pt 6 lt 2 linewidth 1.2 title 'Kite';
 #    EOF

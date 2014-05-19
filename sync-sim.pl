@@ -17,14 +17,13 @@ sub getresult () {
 }
 
 my $ff;
-
-open($ff, ">", "results/size-packet-0.txt") or die "Can not open file: $!";
+open($ff, ">", "results/size-packet-0-test.txt") or die "Can not open file: $!";
 foreach my $size ( map {$_*5} (1 .. 6) ) {
   print $ff "$size ";
   my @a = ();
   foreach my $run ( 1 .. $nrun ) {
    # my $cmd = "NS_GLOBAL_VALUE=\"RngRun=${run}\" ./waf --run \"tree-mobile --kite=1 --speed=500 --size=${size} --grid=4 --stop=20 --SyncApp::UpdatePeriod=20 \" "; 
-    my $cmd = "NS_GLOBAL_VALUE=\"RngRun=${run}\" ./build/tree-mobile --kite=0 --speed=400 --size=${size} --grid=4 --stop=20 --SyncApp::UpdatePeriod=4 --join=0"; 
+    my $cmd = "NS_GLOBAL_VALUE=\"RngRun=${run}\" ./build/sync --kite=0 --speed=400 --size=${size} --grid=4 --stop=20 --SyncApp::UpdatePeriod=4 --join=0"; 
     system ($cmd); 
      #print $ff " ", &getresult();
     #print " ", &getresult();
@@ -36,15 +35,16 @@ foreach my $size ( map {$_*5} (1 .. 6) ) {
   print $ff "\n";
 }
 close $ff;
-#exit 0;
+exit 0;
 
-open($ff, ">", "results/size-packet-1.txt") or die "Can not open file: $!";
+
+open($ff, ">", "results/size-packet-1-test.txt") or die "Can not open file: $!";
 foreach my $size ( map {$_*5} (1 .. 6) ) {
   print $ff "$size ";
   my @a = ();
   foreach my $run ( 1 .. $nrun ) {
    # my $cmd = "NS_GLOBAL_VALUE=\"RngRun=${run}\" ./waf --run \"tree-mobile --kite=1 --speed=500 --size=${size} --grid=4 --stop=20 --SyncApp::UpdatePeriod=20 \" "; 
-    my $cmd = "NS_GLOBAL_VALUE=\"RngRun=${run}\" ./build/tree-mobile --kite=1 --speed=400 --size=${size} --grid=4 --stop=20 --SyncApp::UpdatePeriod=4 --join=2"; 
+    my $cmd = "NS_GLOBAL_VALUE=\"RngRun=${run}\" ./build/sync --kite=1 --speed=400 --size=${size} --grid=4 --stop=20 --SyncApp::UpdatePeriod=4 --join=2"; 
     system ($cmd); 
     #print $ff " ", &getresult();
     #print " ", &getresult();
@@ -57,5 +57,6 @@ foreach my $size ( map {$_*5} (1 .. 6) ) {
 }
 close $ff;
 exit 0;
+
 
 

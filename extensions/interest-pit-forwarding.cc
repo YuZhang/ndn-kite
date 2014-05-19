@@ -42,6 +42,10 @@ TypeId PitForwarding::GetTypeId ()
     .SetGroupName ("Ndn")
     .SetParent <ForwardingStrategy> ()
     .AddConstructor <PitForwarding> ()
+    .AddAttribute ("Pull", "Enable Pull.",
+                   BooleanValue(true),
+                   MakeBooleanAccessor (&PitForwarding::m_pull),
+                   MakeBooleanChecker ())
     ;
   return tid;
 }
@@ -55,7 +59,6 @@ PitForwarding::PitForwarding ()
 // ToDo: the current implementation of Pull is the most `simple and stupid'
 int
 PitForwarding::Pull (Ptr<Face> inFace,
-                     Ptr<Face> outFace,  // useful for sending
                      Ptr<const Interest> interest,
                      Ptr<pit::Entry> pitEntry)
 {
@@ -74,8 +77,20 @@ PitForwarding::Pull (Ptr<Face> inFace,
           pit::Entry::out_iterator face = pfEntry->GetOutgoing ().find (inFace);
           if (face == pfEntry-> GetOutgoing ().end ()) // Not yet being sent to inFace
             {
-              //pit::Entry::in_iterator face = pfEntry->GetIncoming ().begin (); // First incoming face
-              
+              Ptr<Face> outFace = 0;
+              pit::Entry::in_iterator face = pfEntry->GetIncoming ().begin ();
+              for (; face != pfEntry->GetIncoming ().end (); face++)
+                {
+                  if (inFace != face->m_face)
+                    {
+                      outFace = face->m_face;
+                      break;
+                    }
+                }
+              if (outFace == 0) // pulled by itself
+                {
+                  return 0;
+                }
               NS_LOG_INFO ("Interest Pulled by " << interest->GetName ());
               NS_LOG_DEBUG ("Inface: " << *outFace << " Outface: " << *inFace << " pfInterest" << *pfInterest);
               if (TrySendOutInterest (outFace, inFace, pfInterest, pfEntry))
@@ -103,6 +118,7 @@ PitForwarding::DoPitForwarding (Ptr<Face> inFace,
   if ((interest->GetPitForwardingFlag () & 1) == 1) // If Traceable 
     {
       // To-do: Pit Forwarding Table
+      if (m_pull) Pull (inFace, interest, pitEntry);
     }
 
   if (interest->GetPitForwardingNamePtr () == 0)
@@ -111,10 +127,12 @@ PitForwarding::DoPitForwarding (Ptr<Face> inFace,
     } 
 
   NS_LOG_FUNCTION (this << interest->GetName ());
-  NS_LOG_INFO ("PF Name " << interest->GetPitForwardingName () << " Face: " << *inFace);
+  NS_LOG_INFO ("PF Name: " << interest->GetPitForwardingName () << " Face: " << *inFace);
   Ptr<pit::Entry> pfEntry = m_pit->Find (interest->GetPitForwardingName ());
   if (pfEntry == 0)
     {
+      //NS_LOG_DEBUG ("\n======\n" << *m_pit << "=====\n");
+      //NS_LOG_DEBUG ("! Entry Not Found");
       return false;
     }
 
@@ -122,6 +140,7 @@ PitForwarding::DoPitForwarding (Ptr<Face> inFace,
   // Issue: for Interests with the same name, only the first one is here
   if ((pfInterest->GetPitForwardingFlag () & 1) != 1) // If not Tracable
     {
+      NS_LOG_DEBUG ("! Entry Not Tracable");
       return false;
     }
   
@@ -148,34 +167,6 @@ PitForwarding::DoPitForwarding (Ptr<Face> inFace,
         }
     }
 
-  // mutual Interest forwarding: only support sync app
-  // To-Do: A fully functional mutual forwarding needs Pit Forwarding Table
-  // if ((propagatedCount >0) &&
-  //     ((interest->GetPitForwardingFlag () & 1) == 1) &&  // if Tracable
-  //     (pfInterest->GetPitForwardingNamePtr () != 0) &&
-  //     (interest->GetName () == pfInterest->GetPitForwardingName ())) 
-  //   {
-  //     pit::Entry::out_iterator face = pfEntry->GetOutgoing ().find (inFace);
-  //     if (face == pfEntry-> GetOutgoing ().end ())
-  //       {
-  //         NS_LOG_INFO ("Mutual Interest forwarding on " << interest->GetName ());
-  //         NS_LOG_DEBUG ("Inface: " << *inFace << " Outface: " << *outFace);
-  //         if (TrySendOutInterest (outFace, inFace, pfInterest, pfEntry))
-  //           {
-  //             NS_LOG_DEBUG ("Mutual Interest Propagated to " << *inFace);
-  //             propagatedCount++;
-  //           }
-  //         else
-  //           {
-  //             NS_LOG_DEBUG ("Failed: Mutual Interest Propagated to " << *inFace);
-  //           }
-  //       }
-  //   }
-  if (propagatedCount >0)
-    {
-      propagatedCount += Pull (inFace, outFace, interest, pitEntry);
-    }
-
   NS_LOG_INFO ("Propagated to " << propagatedCount << " faces");
   return propagatedCount > 0;
 }
@@ -189,6 +180,12 @@ PitForwarding::DoFlooding (Ptr<Face> inFace,
   NS_LOG_FUNCTION (this << interest->GetName ());
 
   int propagatedCount = 0;
+  // If No FIB entry or Only default entry, do not forward
+  if ((! pitEntry->GetFibEntry ()) || (pitEntry->GetFibEntry ()->GetPrefix ().toUri () == "/"))
+    {
+      NS_LOG_DEBUG ("! No FIB entry");
+      return 0;
+    }
 
   BOOST_FOREACH (const fib::FaceMetric &metricFace, pitEntry->GetFibEntry ()->m_faces.get<fib::i_metric> ())
     {
@@ -215,8 +212,6 @@ PitForwarding::DoPropagateInterest (Ptr<Face> inFace,
                                     Ptr<const Interest> interest,
                                     Ptr<pit::Entry> pitEntry)
 {
-  // std::cerr << "Print PIT:" << std::endl;
-  // std::cerr << *m_pit;
 
   // Current implementation is a hack in forwarding strategy 
   // To-Do: implement prefix-specific strategy inside daemon
@@ -225,14 +220,11 @@ PitForwarding::DoPropagateInterest (Ptr<Face> inFace,
   // An Interest will not be sent back to its incoming face
   // On a router, a PIT-forwarding-only Interest will be forwarded to faces with default '/' route
   NS_LOG_FUNCTION (this << interest->GetName ());
-  NS_LOG_INFO ("PF Name: " << interest->GetPitForwardingName () << " Face: " << *inFace << " Flag: " << (interest->GetPitForwardingFlag ()+60) );
+  //NS_LOG_INFO ("PF Name: " << interest->GetPitForwardingName () << " Face: " << *inFace << " Flag: " << (interest->GetPitForwardingFlag ()+60) );
 
   bool didPitForwarding = DoPitForwarding (inFace, interest, pitEntry);
-  //if (didPitForwarding && (interest->GetPitForwardingFlag () & 2) == 2) // TraceOnly
 
-  // !!! This is NOT the default behavior of TraceOnly
-
-  if ((interest->GetPitForwardingFlag () & 2) == 2) // TraceOnly
+  if (didPitForwarding && (interest->GetPitForwardingFlag () & 2) == 2) // If DidPit and TraceOnly
     {
       return didPitForwarding;
     }
