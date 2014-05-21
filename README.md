@@ -1,16 +1,15 @@
 Kite simulation on ndnSIM
 ================
 
-This simulates ChronoSync Mod + Kite on ndnSIM.  
+This package simulates Upload, and ChronoSync Mod + Kite on ndnSIM.  
 
-To enable Interest trace forwarding, two new fields in Interest packet are added. 
-We need to install:
+To enable Interest trace forwarding, two new optional fields are added into Interest. 
 
 `https://github.com/YuZhang/ndnSIM`
 
 After installing the above version of ndnSIM, we need 
 
-first configure: (CAUTION: `--debug` cannot be omitted due to an issue)
+first configure: (CAUTION: `--debug` cannot be omitted due to an unknown issue)
 
 `PKG_CONFIG_PATH=/usr/local/lib/pkgconfig ./waf configure --debug`
 
