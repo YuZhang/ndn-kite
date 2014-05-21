@@ -18,7 +18,7 @@ sub getresult () {
 
 my $ff;
 
-open($ff, ">", "results/size-packet-1-test.txt") or die "Can not open file: $!";
+open($ff, ">", "results/size-packet-1.txt") or die "Can not open file: $!";
 foreach my $size ( map {$_*5} (1 .. 6) ) {
   print $ff "$size ";
   my @a = ();
@@ -32,13 +32,14 @@ foreach my $size ( map {$_*5} (1 .. 6) ) {
     print ".";
   }
   my @b = sort {$a <=> $b} @a;
-  print $ff "@b[0, int($nrun*0.25), int($nrun*0.5)-1, int($nrun*0.75)-1, $nrun-1, int($nrun*0.05)-1, int($nrun*0.95)-1]"; 
+  my $t = 0;
+  foreach (@a) {$t += $_;}
+  print $ff "@b[0, int($nrun*0.25), int($nrun*0.5)-1, int($nrun*0.75)-1, $nrun-1, int($nrun*0.05)-1, int($nrun*0.95)-1] ", $t/50; 
   print $ff "\n";
 }
 close $ff;
-exit 0;
 
-open($ff, ">", "results/size-packet-0-test.txt") or die "Can not open file: $!";
+open($ff, ">", "results/size-packet-0.txt") or die "Can not open file: $!";
 foreach my $size ( map {$_*5} (1 .. 6) ) {
   print $ff "$size ";
   my @a = ();
@@ -52,7 +53,9 @@ foreach my $size ( map {$_*5} (1 .. 6) ) {
     print ".";
   }
   my @b = sort {$a <=> $b} @a;
-  print $ff "@b[0, int($nrun*0.25), int($nrun*0.5)-1, int($nrun*0.75)-1, $nrun-1, int($nrun*0.05)-1, int($nrun*0.95)-1]"; 
+  my $t = 0;
+  foreach (@a) {$t += $_;}
+  print $ff "@b[0, int($nrun*0.25), int($nrun*0.5)-1, int($nrun*0.75)-1, $nrun-1, int($nrun*0.05)-1, int($nrun*0.95)-1] ", $t/50; 
   print $ff "\n";
 }
 close $ff;

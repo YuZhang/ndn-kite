@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-my $nrun = 50;
+my $nrun = 100;
 
 sub getresult () {
  my $c = 0;
@@ -28,10 +28,13 @@ foreach my $size ( map {$_*50} (1 .. 6) ) {
     print ".";
   }
   my @b = sort {$a <=> $b} @a;
-  print $ff "@b[0, int($nrun*0.25), int($nrun*0.5)-1, int($nrun*0.75)-1, $nrun-1, int($nrun*0.05)-1, int($nrun*0.95)-1]"; 
+  my $t = 0;
+  foreach (@a) {$t += $_;}
+  print $ff "@b[0, int($nrun*0.25), int($nrun*0.5)-1, int($nrun*0.75)-1, $nrun-1, int($nrun*0.05)-1, int($nrun*0.95)-1] ", $t/50; 
   print $ff "\n";
 }
 close $ff;
+#exit 0;
 
 open($ff, ">", "results/speed-packet-0.txt") or die "Can not open file: $!";
 foreach my $size ( map {$_*50} (1 .. 6) ) {
@@ -44,7 +47,9 @@ foreach my $size ( map {$_*50} (1 .. 6) ) {
     print ".";
   }
   my @b = sort {$a <=> $b} @a;
-  print $ff "@b[0, int($nrun*0.25), int($nrun*0.5)-1, int($nrun*0.75)-1, $nrun-1, int($nrun*0.05)-1, int($nrun*0.95)-1]"; 
+  my $t = 0;
+  foreach (@a) {$t += $_;}
+  print $ff "@b[0, int($nrun*0.25), int($nrun*0.5)-1, int($nrun*0.75)-1, $nrun-1, int($nrun*0.05)-1, int($nrun*0.95)-1] ", $t/50; 
   print $ff "\n";
 }
 close $ff;

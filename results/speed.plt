@@ -51,7 +51,7 @@ set angles radians
 unset grid
 set raxis
 set key title ""
-set key inside left top vertical Right noreverse enhanced autotitles nobox
+set key inside right top vertical Right noreverse enhanced autotitles nobox
 set key noinvert samplen 4 spacing 1 width 0 height 0 
 set key maxcolumns 0 maxrows 0
 set key noopaque
@@ -125,11 +125,11 @@ set x2label ""
 set x2label  offset character 0, 0, 0 font "" textcolor lt -1 norotate
 set xrange [ 0.00000 : 350.0000 ] noreverse nowriteback
 set x2range [ * : * ] noreverse nowriteback
-set ylabel "Time to upload 1000 packets (s)" 
+set ylabel "Uploading rate (pps)" 
 set ylabel  offset character 0, 0, 0 font "" textcolor lt -1 rotate by -270
 set y2label "" 
 set y2label  offset character 0, 0, 0 font "" textcolor lt -1 rotate by -270
-#set yrange [ 0 : 1 ] noreverse nowriteback
+#set yrange [ 0 : 1000 ] noreverse nowriteback
 unset yrange
 set y2range [ * : * ] noreverse nowriteback
 set zlabel "" 
@@ -157,6 +157,7 @@ set fontpath
 set psdir
 set fit noerrorvariables
 #GNUTERM = "aqua"
-#plot 'speed-packet-0.txt' using ($1-10):3:2:6:5 with candlesticks linetype 1 notitle whiskerbars, '' using ($1-10):4 with lp pt 7 lt 1 t 'MMS', 'speed-packet-1.txt' using ($1+10):3:2:6:5 with candlesticks linetype 1 notitle whiskerbars, '' using ($1+10):4 with lp pt 6 lt 2 linewidth 1.2 title 'Kite';
-plot 'speed-packet-0.txt' using ($1-8):(100000/$4):(100000/$6):(100000/$2) with yerrorlines pt 7 lt 1 t 'MMS', 'speed-packet-1.txt' using ($1+8):(100000/$4):(100000/$6):(100000/$2) with yerrorlines pt 6 lt 1 title 'Kite'
+#plot 'speed-packet-0.txt' using ($1-10):3:2:6:5 with candlesticks linetype 1 notitle whiskerbars, '' using ($1-10):9 with lp pt 7 lt 1 t 'MMS', 'speed-packet-1.txt' using ($1+10):3:2:6:5 with candlesticks linetype 1 notitle whiskerbars, '' using ($1+10):9 with lp pt 6 lt 2 linewidth 1.2 title 'Kite';
+#plot 'speed-packet-0.txt' using ($1-8):(100000/$9):(100000/$6):(100000/$2) with yerrorlines pt 7 lt 1 t 'MMS', 'speed-packet-1.txt' using ($1+8):(100000/$9):(100000/$6):(100000/$2) with yerrorlines pt 6 lt 1 title 'Kite'
+plot 'speed-packet-0.txt' using ($1-7):($9/100):($2/100):($6/100) with yerrorlines pt 7 lt 1 t 'MMS', 'speed-packet-1.txt' using ($1+7):($9/100):($2/100):($6/100) with yerrorlines pt 6 lt 1 title 'Kite'
 #    EOF
