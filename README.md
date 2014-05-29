@@ -9,9 +9,10 @@ In simulation, the MN walks 150m at a constant speed before changing to a random
 * Simulation Setup in the Share scenario
 
 In simulations, MNs are scattered randomly and walk $150m$ at a random speed up to 300 m/s before changing to a random direction. The new updates on the dataset, such as new messages in a chatroom, are generated in a random interval up to 4s, and the outstanding Interests are sent periodically every 2s. The forwarders do not automatically resend unsatisfied Interests. The rendezvous anchor is a router at the left top corner of grid. The Join interests in the Share protocol are sent every 2s. All Interests have a constant lifetime of 2s, and all constant timers are inserted with random jitters. For the same number of MNs, we run the simulations 50 times with different seeds for 20s.
-This package simulates Upload, and ChronoSync Mod + Kite on ndnSIM.  
 
 ================
+This package simulates Upload, and ChronoSync Mod + Kite on ndnSIM.  
+
 To enable Interest trace forwarding, two new optional fields are added into Interest. 
 
 `https://github.com/YuZhang/ndnSIM`
