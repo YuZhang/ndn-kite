@@ -1,5 +1,7 @@
 Kite simulation on ndnSIM
 ================
+The simulations in this section are set up in a field of 400 X 400 m^{2} with an infrastructural network composed of 16 fixed routers, which are allocated in, and connected via point-to-point links as, a 4 X 4 grid in 300 X 300 m^{2}. Every router and MN has a Wifi device with default setting.
+
 * Simulation Setup in the Upload scenario
 
 In simulation, the MN walks 150m at a constant speed before changing to a random direction, and sends the traced Interests to the CN every 2s. The application in the CN uses a credit-based flow control, and the retransmission timer is 2s. The forwarders do not automatically resend unsatisfied Interests. We simulated the MMS scheme by disabling the pull mechanism of Kite as if the traced Interest from the MN is only to notify the CN of the current location of MN. Each Data is composed of 1024 bytes. For the same speed, the simulation runs 100 times with different seeds for 100s.
